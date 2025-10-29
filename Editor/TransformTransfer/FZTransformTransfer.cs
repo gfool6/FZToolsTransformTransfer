@@ -126,7 +126,18 @@ namespace FZTools
         private GameObject GetArmature(GameObject avatar)
         {
             Animator animator = avatar.GetComponent<Animator>();
-            return AvatarUtils.GetArmature(animator);
+            var armature = AvatarUtils.GetArmature(animator);
+            if (armature == null)
+            {
+                avatar.GetComponentsInChildren<Transform>().ToList().ForEach(t =>
+                {
+                    if (t.name.ToLower().Contains("armature"))
+                    {
+                        armature = t.gameObject;
+                    }
+                });
+            }
+            return armature;
         }
 
         private Transform[] GetTransforms(GameObject avatar)

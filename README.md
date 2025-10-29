@@ -1,6 +1,6 @@
 # FZTools Transform Transfer
 
-インストールは[こちら](vcc://vpm/addRepo?url=https://gfool6.github.io/vpm-repos/vpm.json)
+インストールは[こちら](vcc://vpm/addRepo?url=https://gfool6.github.io/vpm-repos/vpm-list.json)
 
 ## ScaleTransfer(β)
 ### 機能
