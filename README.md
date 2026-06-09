@@ -7,5 +7,7 @@
 - ArmatureのScaleやTransformなどを読み取り、適用
 - ScaleAdjusterをコピー
 - ※ModularAvatar必須
+- アバター→アバター間のScale・Transform転送を想定しています
+- アバター→衣装を対象にしたモードも追加しました
 <br>
 

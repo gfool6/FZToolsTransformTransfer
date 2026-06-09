@@ -21,6 +21,7 @@ namespace FZTools
         [SerializeField] GameObject targetAvatar;
         [SerializeField] GameObject sourceAvatar;
 
+        bool isTargetWare = false;
         bool isBasicBonesOnly = false;
         bool isTransferPosition = false;
         bool isTransferRotation = false;
@@ -66,6 +67,7 @@ namespace FZTools
                     EUI.Label("Option");
                     EUI.Space();
                     // 基礎ボーンのみ対象とTransformそれぞれにチェックボックス
+                    EUI.ToggleWithLabel(ref isTargetWare, "衣装を対象にするモード");
                     EUI.ToggleWithLabel(ref isBasicBonesOnly, "基礎的なHumanoid Boneのみ対象");
                     EUI.ToggleWithLabel(ref isTransferPosition, "Positionを転送");
                     EUI.ToggleWithLabel(ref isTransferRotation, "Rotationを転送");
@@ -88,8 +90,9 @@ namespace FZTools
             }
 
             // Armatureの処理
-            var targetArmature = GetArmature(targetAvatar);
-            var sourceArmature = GetArmature(sourceAvatar);
+            GameObject sourceArmature = GetArmature(sourceAvatar);
+            GameObject targetArmature = GetArmature(targetAvatar);
+
             if (targetArmature == null || sourceArmature == null)
             {
                 UnityEngine.Debug.LogError("Target AvatarまたはSource AvatarにArmatureが見つかりません");
@@ -102,8 +105,17 @@ namespace FZTools
             }
 
             // Armature以下の全Transformの処理
-            var targetTransforms = GetTransforms(targetAvatar);
-            var sourceTransforms = GetTransforms(sourceAvatar);
+            Transform[] sourceTransforms = GetTransforms(sourceAvatar);
+            Transform[] targetTransforms = null;
+            if (isTargetWare)
+            {
+                targetTransforms = GetTransformsWithSource(targetArmature, sourceTransforms);
+            }
+            else
+            {
+                targetTransforms = GetTransforms(targetAvatar);
+            }
+
             foreach (var st in sourceTransforms)
             {
                 var tt = targetTransforms.FirstOrDefault(t => t.name == st.name);
@@ -134,6 +146,7 @@ namespace FZTools
                     if (t.name.ToLower().Contains("armature"))
                     {
                         armature = t.gameObject;
+                        return;
                     }
                 });
             }
@@ -156,7 +169,13 @@ namespace FZTools
                 return basicBones.Where(t => t != null).ToArray();
             }
             var armature = animator.GetBoneTransform(HumanBodyBones.Hips).parent.gameObject;
-            return armature.GetComponentsInChildren<Transform>(); ;
+            return armature.GetComponentsInChildren<Transform>();
+        }
+
+        private Transform[] GetTransformsWithSource(GameObject avatar, Transform[] sourceTransforms)
+        {
+            Transform[] transforms = avatar.GetComponentsInChildren<Transform>();
+            return transforms.Where(t => sourceTransforms.Select(st => st.name).Contains(t.name)).ToArray();
         }
 
         private void TransferTransform(GameObject target, GameObject source)
